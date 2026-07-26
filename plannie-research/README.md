@@ -23,6 +23,7 @@ Local decompile (gitignored): `apk/`, `analysis/`, `tools/`.
 3. [API surface & integrations](docs/03-api-and-integrations.md)
 4. [Best practices for building an alternative](docs/04-build-alternative.md)
 5. [Product gaps / opportunities](docs/05-product-gaps.md)
+6. [UX & user flows](docs/06-ux-and-user-flows.md)
 
 ## Quick verdict
 
