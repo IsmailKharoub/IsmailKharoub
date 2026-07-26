@@ -22,6 +22,7 @@ Local decompile (gitignored): `apk/`, `analysis/`, `tools/`.
 2. [Product features & domain model](docs/02-product-features.md)
 3. [API surface & integrations](docs/03-api-and-integrations.md)
 4. [Best practices for building an alternative](docs/04-build-alternative.md)
+5. [Product gaps / opportunities](docs/05-product-gaps.md)
 
 ## Quick verdict
 
