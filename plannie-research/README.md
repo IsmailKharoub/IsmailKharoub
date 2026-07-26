@@ -24,6 +24,7 @@ Local decompile (gitignored): `apk/`, `analysis/`, `tools/`.
 4. [Best practices for building an alternative](docs/04-build-alternative.md)
 5. [Product gaps / opportunities](docs/05-product-gaps.md)
 6. [UX & user flows](docs/06-ux-and-user-flows.md)
+7. [Modern UX upgrades](docs/07-modern-ux-upgrades.md)
 
 ## Quick verdict
 
