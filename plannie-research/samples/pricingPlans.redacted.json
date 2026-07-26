@@ -1,0 +1,162 @@
+{
+  "paramName": "pricingPlans",
+  "plans": [
+    {
+      "pricingPlanId": 0,
+      "pricingPlanName": "Plannie Trial",
+      "maxSms": 100,
+      "allowStations": true,
+      "allowPairing": true,
+      "maxServices": 20,
+      "allowWebAccess": true,
+      "annualyPrice": {
+        "USD": 0,
+        "ILS": 0
+      },
+      "monthlyPrice": {
+        "USD": 0,
+        "ILS": 0
+      },
+      "batchSmsAllowed": 3,
+      "batchEmailAllowed": 3
+    },
+    {
+      "pricingPlanId": 1,
+      "pricingPlanName": "Plannie Plus",
+      "allowStations": false,
+      "allowPairing": false,
+      "maxServices": 20,
+      "allowWebAccess": false,
+      "annualyPrice": {
+        "USD": 19,
+        "ILS": 69
+      },
+      "monthlyPrice": {
+        "USD": 22,
+        "ILS": 79
+      },
+      "batchSmsAllowed": 0,
+      "batchEmailAllowed": 0,
+      "paypal": "<redacted paypal plan ids>"
+    },
+    {
+      "pricingPlanId": 2,
+      "pricingPlanName": "Plannie Team",
+      "allowStations": true,
+      "allowPairing": true,
+      "maxServices": 20,
+      "allowWebAccess": true,
+      "additionalStationMonthlyPrice": {
+        "USD": 9,
+        "ILS": 39
+      },
+      "additionalStationAnnualyPrice": {
+        "USD": 8,
+        "ILS": 29
+      },
+      "annualyPrice": {
+        "USD": 24,
+        "ILS": 89
+      },
+      "monthlyPrice": {
+        "USD": 29,
+        "ILS": 99
+      },
+      "batchSmsAllowed": 3,
+      "batchEmailAllowed": 3,
+      "paypal": "<redacted paypal plan ids>"
+    },
+    {
+      "pricingPlanId": 11,
+      "pricingPlanName": "Plannie Entry",
+      "allowStations": false,
+      "allowPairing": false,
+      "maxServices": 6,
+      "allowedEventsPerMonth": 50,
+      "allowWebAccess": false,
+      "annualyPrice": {
+        "USD": 13,
+        "ILS": 49
+      },
+      "monthlyPrice": {
+        "USD": 15,
+        "ILS": 59
+      },
+      "batchSmsAllowed": 0,
+      "batchEmailAllowed": 0,
+      "paypal": "<redacted paypal plan ids>"
+    },
+    {
+      "pricingPlanId": 14,
+      "pricingPlanName": "Plannie Premium",
+      "allowStations": true,
+      "allowPairing": true,
+      "maxServices": 30,
+      "allowWebAccess": true,
+      "additionalStationMonthlyPrice": {
+        "USD": 9,
+        "ILS": 39
+      },
+      "additionalStationAnnualyPrice": {
+        "USD": 8,
+        "ILS": 29
+      },
+      "annualyPrice": {
+        "USD": 30,
+        "ILS": 112
+      },
+      "monthlyPrice": {
+        "USD": 35,
+        "ILS": 127
+      },
+      "batchSmsAllowed": 3,
+      "batchEmailAllowed": 3,
+      "paypal": "<redacted paypal plan ids>"
+    },
+    {
+      "pricingPlanId": 20,
+      "pricingPlanName": "Plannie Premium Payments",
+      "allowStations": true,
+      "allowPairing": true,
+      "maxServices": 20,
+      "allowWebAccess": true,
+      "additionalStationMonthlyPrice": {
+        "USD": 9,
+        "ILS": 39
+      },
+      "additionalStationAnnualyPrice": {
+        "USD": 8,
+        "ILS": 29
+      },
+      "annualyPrice": {
+        "USD": 30,
+        "ILS": 99
+      },
+      "monthlyPrice": {
+        "USD": 35,
+        "ILS": 119
+      },
+      "batchSmsAllowed": 3,
+      "batchEmailAllowed": 3,
+      "paypal": "<redacted paypal plan ids>"
+    },
+    {
+      "pricingPlanId": 99,
+      "pricingPlanName": "Plannie Test",
+      "allowStations": true,
+      "allowPairing": true,
+      "maxServices": 20,
+      "allowWebAccess": true,
+      "annualyPrice": {
+        "USD": 1,
+        "ILS": 1
+      },
+      "monthlyPrice": {
+        "USD": 2,
+        "ILS": 2
+      },
+      "batchSmsAllowed": 1,
+      "batchEmailAllowed": 1
+    }
+  ]
+}
