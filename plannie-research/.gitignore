@@ -1,0 +1,7 @@
+# Do not redistribute proprietary binaries or full decompilations
+apk/
+analysis/
+tools/
+*.apk
+*.xapk
+*.aab
