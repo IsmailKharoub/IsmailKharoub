@@ -1,4 +1,7 @@
-# 3 researched Israel-first side projects (v2)
+# 3 researched Israel-first side projects (v2) — SUPERSEDED
+
+> **Superseded by [12-where-the-real-gaps-are.md](12-where-the-real-gaps-are.md).** Pricing research showed the "regulation micro-SaaS" lane (Shaar-style) is already crowded with near-identical indie entrants, and WhatsApp-as-channel is not an advantage. Kept for the reasoning trail.
+
 
 The previous shortlist (Vaad / Makor / Mishmar) was weak: **“WhatsApp for X”** with soft pain, slow committees, or high-churn venues — no forced demand, no high LTV, easy for Gambot-class BSPs to clone.
 
