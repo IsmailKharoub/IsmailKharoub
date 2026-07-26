@@ -28,6 +28,7 @@ Local decompile (gitignored): `apk/`, `analysis/`, `tools/`.
 8. [Unit economics — 100-client side hustle](docs/08-unit-economics-side-hustle.md)
 9. [Side-hustle plan (phone-first, AI-managed)](docs/09-side-hustle-plan.md)
 10. [30 hours/week coverage](docs/10-thirty-hours-week.md)
+11. [3 more Israel-first side projects](docs/11-three-more-side-projects.md)
 
 ## Quick verdict
 
