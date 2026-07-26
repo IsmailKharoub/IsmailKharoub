@@ -29,7 +29,8 @@ Local decompile (gitignored): `apk/`, `analysis/`, `tools/`.
 9. [Side-hustle plan (phone-first, AI-managed)](docs/09-side-hustle-plan.md)
 10. [30 hours/week coverage](docs/10-thirty-hours-week.md)
 11. [3 researched Israel-first side projects (v2)](docs/11-three-more-side-projects.md) — *superseded*
-12. [Where the real gaps are (v3)](docs/12-where-the-real-gaps-are.md) — platform ecosystems (Atlassian Forge / monday.com / Open Dental), not WhatsApp channels
+12. [Where the real gaps are (v3)](docs/12-where-the-real-gaps-are.md) — *off-brief (marketplace apps); competitor pricing still useful*
+13. [3 micro-SaaS in the Plannie lane (v4)](docs/13-three-micro-saas-same-lane.md) — **Sevev / Baderech / Sha'a**
 
 ## Quick verdict
 

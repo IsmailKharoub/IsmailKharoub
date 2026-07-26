@@ -1,4 +1,7 @@
-# Where the real gaps are (v3): platform ecosystems, not channels
+# Where the real gaps are (v3): platform ecosystems, not channels — OFF-BRIEF
+
+> **Off-brief.** The ask was Israeli micro-SaaS in the Plannie lane; this doc drifted into marketplace app development. The competitor pricing tables below are still useful evidence. For the actual answer see **[13-three-micro-saas-same-lane.md](13-three-micro-saas-same-lane.md)**.
+
 
 ## First, the correction
 
