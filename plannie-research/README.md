@@ -25,6 +25,8 @@ Local decompile (gitignored): `apk/`, `analysis/`, `tools/`.
 5. [Product gaps / opportunities](docs/05-product-gaps.md)
 6. [UX & user flows](docs/06-ux-and-user-flows.md)
 7. [Modern UX upgrades](docs/07-modern-ux-upgrades.md)
+8. [Unit economics — 100-client side hustle](docs/08-unit-economics-side-hustle.md)
+9. [Side-hustle plan (phone-first, AI-managed)](docs/09-side-hustle-plan.md)
 
 ## Quick verdict
 

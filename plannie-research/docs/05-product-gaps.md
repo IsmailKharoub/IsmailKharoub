@@ -8,10 +8,9 @@ Below are the **real product gaps** — missing or weak features users complain 
 
 ## P0 — Users explicitly feel the pain
 
-### 1. No real desktop / web pro experience
-- App literally shows **“Desktop not supported”**; desktop app tile was stubbed as coming-soon then removed.
-- Pros manage WhatsApp/bookings from a computer; forcing mobile-only is a daily friction.
-- **Win:** First-class responsive web app for the pro (calendar + inbox + settings).
+### 1. ~~Desktop / web pro~~ (out of scope for us)
+- Plannie blocks desktop; some reviews want it.
+- **Our bet:** skip desktop — target pros who live on their phone. Invest in great mobile instead.
 
 ### 2. WhatsApp is not a first-class channel
 - Reviews: WhatsApp interface “doesn’t work as it should”; many prefer WhatsApp over SMS.
@@ -129,6 +128,6 @@ Compete by **fixing their holes**, not cloning the calendar.
 
 For IL service SMBs, the sharpest product thesis vs Plannie:
 
-> **WhatsApp-native scheduling + desktop-class pro web + auto slot packing + editable automations/follow-ups**, with honest pricing and a client experience that isn’t a fake business app.
+> **WhatsApp-native scheduling + phone-first pro app + auto slot packing + editable automations/follow-ups**, with honest pricing and a client experience that isn’t a fake business app.
 
 Optional second wedge if you pick a vertical: **rooms/classes** (fitness) or **memberships/gift cards** (beauty).

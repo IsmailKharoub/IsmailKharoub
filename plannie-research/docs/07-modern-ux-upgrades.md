@@ -15,7 +15,7 @@ Sources: 2025–2026 patterns from Calendly, Fresha/Booksy/Square Appointments c
 | Time-to-live (pro) | Hours as rules → slots computed | Manual windows / heavy work-week UX |
 | Availability model | Weekly schedule + buffers + notice + calendar busy | Windows + work week + sync (fragmented) |
 | Channels | WhatsApp/SMS templates in-product | SMS primary; WA = open native app |
-| Surfaces | Pro **web + mobile**; client **link/PWA** | Pro mobile-only; desktop blocked |
+| Surfaces | Pro **phone-first PWA/app**; client **link/PWA** | Pro mobile-only (aligned — no desktop investment) |
 | Feedback | Instant confirm + add-to-calendar + next steps | Confirm exists; weaker post-book UX |
 | Cognitive load | One clear primary action per screen | FAB sheet + tours + many modals |
 
@@ -59,9 +59,6 @@ Service (price · duration · pro optional)
 │        Today 15:30      │
 │        Thu 10:00        │
 │  ── or pick a day ──    │
-│  [calendar]             │
-│  [Continue]  sticky     │
-└─────────────────────────� ──    │
 │  [calendar]             │
 │  [Continue]  sticky     │
 └─────────────────────────┘
@@ -152,7 +149,7 @@ Busy sources
 | Stations via bottom sheet | Staff filter chips under header |
 | Search icon | Global search (client, phone, appt) |
 
-**Desktop (must-have modern):** week grid + keyboard; no “desktop not supported”.
+**Phone-first (product decision):** day agenda + compact week; no desktop investment. Pros work on phones.
 
 ---
 
@@ -323,7 +320,7 @@ Or keep 5 tabs but redefine:
 | Approved detail | Yes | Sheet UX; WA in-app; rebook; checkout |
 | Share + customer web preview | Yes | Live preview editor + embeds |
 | Campaigns / WL / punch cards | Yes | Progressive disclosure after activation |
-| Desktop block | Remove | Full web pro app |
+| Desktop block | Ignore | Phone-first only (side-hustle scope) |
 | Feature tour stack | Remove | Empty states + 1 coach mark |
 
 ---
@@ -334,7 +331,7 @@ Or keep 5 tabs but redefine:
 New booking page (3–5 steps), confirmation, manage link, WA share templates.
 
 **Phase B — Pro availability mental model**  
-Weekly hours + rules; stop teaching “windows”; desktop week calendar.
+Weekly hours + rules; stop teaching “windows”; phone day/week calendar.
 
 **Phase C — Appointment sheet + messaging**  
 Unified detail sheet; template studio; WA Business.
@@ -351,11 +348,11 @@ Rebook prompts, review asks, waitlist autofill, weekly insight actions.
 
 | Metric | Target |
 |--------|--------|
-| Pro time-to-first-share | &lt; 5 minutes |
+| Pro time-to-first-share | under 5 minutes |
 | Client booking completion rate | +20–40% vs current page |
 | Steps to book (client) | ≤ 5 |
 | % bookings needing manual approval | &lt; 20% (rules) |
-| Desktop weekly active pros | non-zero (today ≈ blocked) |
+| Phone weekly active pros | primary surface; desktop out of scope |
 | Reminder confirm/cancel in-thread | &gt; 30% of reminders |
 
 ---
