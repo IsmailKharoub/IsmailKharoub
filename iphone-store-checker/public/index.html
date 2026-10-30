@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>iPhone pickup availability</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <p class="eyebrow">United States · Apple Store pickup</p>
+      <h1>Is that iPhone in a store near you?</h1>
+      <p class="lede">
+        Pick a model, finish, and storage. This checks live pickup status at Apple Stores around a ZIP code or city.
+      </p>
+    </header>
+
+    <main>
+      <section class="panel" aria-labelledby="config-heading">
+        <h2 id="config-heading">Choose an iPhone</h2>
+        <div id="families" class="families" role="radiogroup" aria-label="iPhone family"></div>
+        <div id="models" class="models" role="radiogroup" aria-label="Size" hidden></div>
+
+        <div class="product">
+          <img id="hero" alt="" width="180" height="198" />
+          <div>
+            <p id="product-name" class="product-name">Loading the current lineup…</p>
+            <p id="product-price" class="product-price"></p>
+            <p id="product-note" class="product-note"></p>
+          </div>
+        </div>
+
+        <fieldset>
+          <legend>Finish</legend>
+          <div id="colors" class="colors" role="radiogroup" aria-label="Finish"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Storage</legend>
+          <div id="capacities" class="pills" role="radiogroup" aria-label="Storage"></div>
+        </fieldset>
+
+        <label class="compare">
+          <input id="compare" type="checkbox" />
+          Compare every finish at this storage
+        </label>
+
+        <form id="search">
+          <label for="location">ZIP code or city and state</label>
+          <div class="search-row">
+            <input
+              id="location"
+              name="location"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              placeholder="90024 or Los Angeles, CA"
+              maxlength="40"
+              required
+            />
+            <button id="check" class="primary" type="submit">Check stores</button>
+          </div>
+          <p class="hint">“Los Angeles” alone is not enough. Use a ZIP code, or a city with its state.</p>
+        </form>
+        <p id="form-error" class="message error" hidden></p>
+      </section>
+
+      <section class="panel results-panel" aria-live="polite">
+        <div class="results-head">
+          <h2 id="results-heading">Nearby stores</h2>
+          <label class="available-only" hidden id="available-only-label">
+            <input id="available-only" type="checkbox" />
+            Available only
+          </label>
+        </div>
+        <div id="results">
+          <p class="prompt">Results show up here after you check a location.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Status comes from Apple’s store pickup service and can change before you arrive. Confirm on
+        apple.com before you go.
+      </p>
+    </footer>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
