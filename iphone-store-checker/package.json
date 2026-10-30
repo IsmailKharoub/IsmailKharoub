@@ -1,0 +1,13 @@
+{
+  "name": "iphone-store-checker",
+  "private": true,
+  "type": "module",
+  "description": "Check iPhone pickup availability at nearby Apple Stores.",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
