@@ -11,6 +11,7 @@ export const DUO_256 = {
 };
 
 export const CHECK_UNION_SQUARE = "Check Union Square";
+export const WATCH_MS = 20 * 60 * 1000;
 const COOLDOWN_MS = 15_000;
 
 export const replyKeyboard = {
@@ -27,6 +28,7 @@ export function parseRequest(text) {
   const raw = String(text || "").trim();
   const command = commandOf(raw);
   if (!raw || command === "/start" || command === "/help") return { type: "help" };
+  if (command === "/stop") return { type: "stop" };
   if (command === "/check" || raw === CHECK_UNION_SQUARE) {
     return { type: "check", parts: "both", location: UNION_SQUARE.location };
   }
@@ -69,7 +71,39 @@ export function helpText() {
     "Checks US Apple Store pickup only.",
     "",
     "Tap Check Union Square. A US ZIP code, or a city and state, checks that place instead.",
+    "",
+    "Union Square is checked every 20 minutes. A message is sent only when a Duo 256GB finish is in stock.",
+    "Send /stop to turn those alerts off.",
   ].join("\n");
+}
+
+export function stockAlert(pickup, products) {
+  const stores = Array.isArray(pickup?.stores) ? pickup.stores : [];
+  const store = stores.find((item) => item.name === UNION_SQUARE.storeName);
+  if (!store) return null;
+  const byPart = new Map((store.parts || []).map((part) => [part.partNumber, part]));
+  const inStock = products.filter((product) => byPart.get(product.partNumber)?.available);
+  if (!inStock.length) return null;
+  const lines = ["<b>In stock at Apple Union Square</b>"];
+  const place = [store.street, [store.city, store.state].filter(Boolean).join(", ")].filter(Boolean).join(", ");
+  if (place) lines.push(escapeHtml(place));
+  for (const product of inStock) {
+    const part = byPart.get(product.partNumber);
+    lines.push(`${escapeHtml(product.label)}: ${escapeHtml(part.quote || "Available")}`);
+  }
+  const when = formatCheckedAt(pickup.checkedAt);
+  if (when) lines.push("", `Checked ${escapeHtml(when)}`);
+  return lines.join("\n");
+}
+
+export async function watchUnionSquare(app) {
+  const products = partList("both");
+  const pickup = await app.availability(
+    UNION_SQUARE.location,
+    products.map((product) => product.partNumber),
+    { fresh: true },
+  );
+  return stockAlert(pickup, products);
 }
 
 export function formatPickup(pickup, products) {
@@ -100,14 +134,21 @@ export function formatPickup(pickup, products) {
 
 export async function handleMessage(app, session, text, now = Date.now()) {
   const request = parseRequest(text);
-  if (request.type === "help") return { text: helpText(), keyboard: true };
+  if (request.type === "stop") {
+    return {
+      text: "Union Square alerts are off. Send any message to turn them back on.",
+      keyboard: true,
+      alerts: false,
+    };
+  }
+  if (request.type === "help") return { text: helpText(), keyboard: true, alerts: true };
   let location = request.location;
   if (location !== UNION_SQUARE.location) {
     try {
       location = parseLocation(location);
     } catch (error) {
       const message = error instanceof HttpError ? error.message : "Use a ZIP code or a city and state.";
-      return { text: message, keyboard: true };
+      return { text: message, keyboard: true, alerts: true };
     }
   }
   const products = partList(request.parts);
@@ -124,5 +165,5 @@ export async function handleMessage(app, session, text, now = Date.now()) {
   session.lastKey = key;
   session.lastAt = now;
   session.lastText = reply;
-  return { text: reply, keyboard: true };
+  return { text: reply, keyboard: true, alerts: true };
 }

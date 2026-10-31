@@ -33,3 +33,5 @@ TELEGRAM_BOT_TOKEN=123456:abc npm run bot
 ```
 
 The process prints a `https://t.me/...` link. Send that to your friend. The buttons are Check Union Square, Night Sky, and Star White. A US ZIP code, or a city and state, checks another US store.
+
+After someone messages the bot, it checks Union Square every 20 minutes and sends a Telegram message only when Night Sky or Star White is in stock. `/stop` turns that chat’s alerts off. The process has to stay running.

@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createApp } from "./server.js";
-import { handleMessage, replyKeyboard } from "./bot.js";
+import { handleMessage, replyKeyboard, WATCH_MS, watchUnionSquare } from "./bot.js";
 
 const POLL_SECONDS = 25;
 
@@ -27,7 +27,26 @@ export async function pollTelegram({ token, app, send = telegram }) {
   console.log(`Union Square checker is @${me.username}`);
   console.log(`Send your friend https://t.me/${me.username}`);
   const sessions = new Map();
+  const alerts = new Set();
   let offset = 0;
+  let watchRunning = false;
+  const runWatch = async () => {
+    if (watchRunning || alerts.size === 0) return;
+    watchRunning = true;
+    try {
+      const text = await watchUnionSquare(app);
+      if (!text) return;
+      for (const chatId of alerts) {
+        await send(token, "sendMessage", { chat_id: chatId, text, parse_mode: "HTML" });
+      }
+    } catch (error) {
+      console.error(error.message || "Scheduled Union Square check failed.");
+    } finally {
+      watchRunning = false;
+    }
+  };
+  const watchTimer = setInterval(runWatch, WATCH_MS);
+  watchTimer.unref?.();
   for (;;) {
     let updates = [];
     try {
@@ -46,8 +65,11 @@ export async function pollTelegram({ token, app, send = telegram }) {
       try {
         reply = await handleMessage(app, session, message.text);
         sessions.set(message.chat.id, session);
+        if (reply.alerts === false) alerts.delete(message.chat.id);
+        else alerts.add(message.chat.id);
       } catch (error) {
         console.error(error.message || "Pickup check failed.");
+        alerts.add(message.chat.id);
         reply = { text: "Apple didn’t return pickup status. Try again in a moment.", keyboard: true };
       }
       await send(token, "sendMessage", {
