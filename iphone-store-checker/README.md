@@ -2,7 +2,9 @@
 
 Check whether a specific iPhone is available for pickup at Apple Stores in the United States.
 
-Pick a model, finish, and storage, then search by ZIP code or by city and state (`Los Angeles, CA`). You can also compare every finish at the storage you chose. Results come from Apple’s public store-pickup service and are cached for two minutes.
+Pick a model, finish, and storage, then search by ZIP code or by city and state (`Los Angeles, CA`). You can also compare every finish at the storage you chose. Results come from Apple’s public store-pickup service.
+
+The same lookup is reused for two minutes, and the time shown is when Apple was actually asked. **Check stores** always asks again. Overlapping checks share that request instead of calling Apple once per click. **Keep checking every 5 minutes** repeats the search, skips redrawing the list when pickup has not changed, and waits while the tab is in the background.
 
 ## Run
 

@@ -36,6 +36,12 @@ function memo(ttlMs) {
   };
 }
 
+function remember(cache, key, entry, limit) {
+  cache.delete(key);
+  cache.set(key, entry);
+  while (cache.size > limit) cache.delete(cache.keys().next().value);
+}
+
 export function createApp({
   fetchImpl = globalThis.fetch,
   catalogTtlMs = 6 * 60 * 60 * 1000,
@@ -43,18 +49,30 @@ export function createApp({
 } = {}) {
   const catalog = memo(catalogTtlMs);
   const availability = new Map();
+  const inflight = new Map();
 
   return {
     catalog: () => catalog(() => loadCatalog(fetchImpl)),
-    availability: (location, parts) => {
+    availability: (location, parts, { fresh = false } = {}) => {
       const key = `${location}|${parts.join(",")}`;
       const hit = availability.get(key);
-      if (hit && Date.now() - hit.at < availabilityTtlMs) return Promise.resolve(hit.value);
-      return loadPickup(fetchImpl, location, parts).then((value) => {
-        availability.set(key, { at: Date.now(), value });
-        if (availability.size > 100) availability.delete(availability.keys().next().value);
-        return value;
-      });
+      if (!fresh && hit && Date.now() - hit.at < availabilityTtlMs) {
+        remember(availability, key, hit, 100);
+        return Promise.resolve({ ...hit.value, checkedAt: hit.checkedAt, cached: true });
+      }
+      const pending = inflight.get(key);
+      if (pending) return pending;
+      const request = loadPickup(fetchImpl, location, parts)
+        .then((value) => {
+          const stored = { at: Date.now(), checkedAt: new Date().toISOString(), value };
+          remember(availability, key, stored, 100);
+          return { ...value, checkedAt: stored.checkedAt, cached: false };
+        })
+        .finally(() => {
+          inflight.delete(key);
+        });
+      inflight.set(key, request);
+      return request;
     },
   };
 }
@@ -104,13 +122,9 @@ export function createServer(options) {
       if (url.pathname === "/api/availability") {
         const location = parseLocation(url.searchParams.get("location"));
         const parts = parseParts(url.searchParams.getAll("parts"));
-        const pickup = await app.availability(location, parts);
-        sendJson(
-          response,
-          200,
-          { ...pickup, checkedAt: new Date().toISOString() },
-          "no-store",
-        );
+        const fresh = url.searchParams.get("fresh") === "1";
+        const pickup = await app.availability(location, parts, { fresh });
+        sendJson(response, 200, pickup, "no-store");
         return;
       }
       if (url.pathname.startsWith("/api/")) {

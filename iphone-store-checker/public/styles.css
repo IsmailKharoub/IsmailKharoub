@@ -222,11 +222,15 @@ input[type="text"] {
 
 .summary strong { font-weight: 700; }
 
-.checked-at, .checking-for {
+.checked-at, .checking-for, .watch-status {
   margin: 0 0 8px;
   color: var(--muted);
   font-size: 0.9rem;
 }
+
+.watch-status { margin-top: 8px; }
+
+.watch-status.changed { color: var(--ink); font-weight: 650; }
 
 .store {
   display: grid;

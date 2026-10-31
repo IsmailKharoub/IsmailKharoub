@@ -1,3 +1,5 @@
+import { availabilitySignature, nextWatchDelay, WATCH_MS } from "./watch.js";
+
 const familiesEl = document.querySelector("#families");
 const modelsEl = document.querySelector("#models");
 const colorsEl = document.querySelector("#colors");
@@ -14,6 +16,8 @@ const formErrorEl = document.querySelector("#form-error");
 const resultsEl = document.querySelector("#results");
 const availableOnlyEl = document.querySelector("#available-only");
 const availableOnlyLabel = document.querySelector("#available-only-label");
+const watchEl = document.querySelector("#watch");
+const watchStatusEl = document.querySelector("#watch-status");
 
 const state = {
   catalog: null,
@@ -23,9 +27,18 @@ const state = {
   capacityKey: null,
   lastResult: null,
   lastProducts: [],
+  lastCheckedAt: 0,
+  signature: null,
 };
 
+let watchTimer = null;
+let configTimer = null;
+let searchSerial = 0;
+let searchRunning = false;
+let followUp = null;
+
 locationEl.value = readLocation();
+watchEl.checked = readWatch();
 
 function readLocation() {
   try {
@@ -40,6 +53,22 @@ function saveLocation(location) {
     localStorage.setItem("pickup-location", location);
   } catch {
     // Storage can be blocked; the search still runs.
+  }
+}
+
+function readWatch() {
+  try {
+    return localStorage.getItem("pickup-watch") === "1";
+  } catch {
+    return false;
+  }
+}
+
+function saveWatch(enabled) {
+  try {
+    localStorage.setItem("pickup-watch", enabled ? "1" : "0");
+  } catch {
+    // The watch still runs for this visit.
   }
 }
 
@@ -139,8 +168,7 @@ function render() {
   })), currentFamily.id, (key) => {
     state.familyId = key;
     state.modelId = null;
-    clearResults();
-    render();
+    configurationChanged();
   });
 
   const showModels = currentFamily.models.length > 1;
@@ -148,8 +176,7 @@ function render() {
   if (showModels) {
     renderChoices(modelsEl, currentFamily.models.map((item) => ({ key: item.id, name: item.name })), currentModel.id, (key) => {
       state.modelId = key;
-      clearResults();
-      render();
+      configurationChanged();
     });
   } else {
     modelsEl.replaceChildren();
@@ -161,8 +188,7 @@ function render() {
     swatch: color.swatch,
   })), state.colorKey, (key) => {
     state.colorKey = key;
-    clearResults();
-    render();
+    configurationChanged();
   });
 
   renderChoices(capacitiesEl, currentModel.capacities.map((capacity) => ({
@@ -170,8 +196,7 @@ function render() {
     label: capacity.label,
   })), state.capacityKey, (key) => {
     state.capacityKey = key;
-    clearResults();
-    render();
+    configurationChanged();
   });
 
   if (!product) return;
@@ -187,21 +212,57 @@ function render() {
 function clearResults() {
   state.lastResult = null;
   state.lastProducts = [];
+  state.signature = null;
   availableOnlyLabel.hidden = true;
   resultsEl.innerHTML = `<p class="prompt">Results show up here after you check a location.</p>`;
+}
+
+function configurationChanged() {
+  searchSerial += 1;
+  clearWatchTimer();
+  clearResults();
+  render();
+  clearTimeout(configTimer);
+  if (!watchEl.checked || !locationEl.value.trim()) {
+    followUp = null;
+    return;
+  }
+  configTimer = setTimeout(() => {
+    runSearch({ fresh: true, quiet: false });
+  }, 400);
 }
 
 function checkedLabel(iso) {
   const when = new Date(iso);
   if (Number.isNaN(when.getTime())) return "";
-  return when.toLocaleString("en-US", {
-    timeZone: "America/Los_Angeles",
+  return when.toLocaleString(undefined, {
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
     timeZoneName: "short",
   });
+}
+
+function setWatchStatus(message, changed = false) {
+  watchStatusEl.hidden = !message;
+  watchStatusEl.textContent = message || "";
+  watchStatusEl.classList.toggle("changed", changed);
+}
+
+function clearWatchTimer() {
+  clearTimeout(watchTimer);
+  watchTimer = null;
+}
+
+function armWatch(forceDelay) {
+  clearWatchTimer();
+  if (!watchEl.checked || document.hidden) return;
+  const delay = forceDelay ?? nextWatchDelay(state.lastCheckedAt, Date.now(), false);
+  if (delay == null) return;
+  watchTimer = setTimeout(() => {
+    runSearch({ fresh: true, quiet: true });
+  }, delay);
 }
 
 function renderResults() {
@@ -274,45 +335,129 @@ async function loadCatalog() {
   render();
 }
 
-formEl.addEventListener("submit", async (event) => {
-  event.preventDefault();
+async function executeSearch({ fresh, quiet }, serial) {
   const products = productsForSearch();
-  if (!products.length) return;
   const location = locationEl.value.trim();
+  if (!products.length || !location || serial !== searchSerial) return;
+  clearWatchTimer();
   showError("");
   checkEl.disabled = true;
-  checkEl.textContent = "Checking…";
-  resultsEl.innerHTML = `<p class="prompt">Checking Apple Stores near ${esc(location)}…</p>`;
+  if (!quiet) {
+    checkEl.textContent = "Checking…";
+    resultsEl.innerHTML = `<p class="prompt">Checking Apple Stores near ${esc(location)}…</p>`;
+    setWatchStatus("");
+  } else {
+    setWatchStatus("Checking Apple again…");
+  }
+  let failed = false;
   try {
     const params = new URLSearchParams();
     params.set("location", location);
+    params.set("fresh", fresh ? "1" : "0");
     for (const product of products) params.append("parts", product.partNumber);
     const response = await fetch(`/api/availability?${params}`);
     const body = await response.json();
+    if (serial !== searchSerial) return;
     if (!response.ok) throw new Error(body.error || "Apple didn’t return store availability.");
     saveLocation(location);
+    const partNumbers = products.map((product) => product.partNumber);
+    const nextSignature = availabilitySignature(body.stores, partNumbers);
+    const changed = state.signature != null && state.signature !== nextSignature;
+    const unchanged = quiet && state.signature != null && state.signature === nextSignature;
     state.lastResult = body;
     state.lastProducts = products;
-    availableOnlyEl.checked = false;
-    renderResults();
+    state.lastCheckedAt = new Date(body.checkedAt).getTime() || Date.now();
+    state.signature = nextSignature;
+    if (unchanged) {
+      const stamp = resultsEl.querySelector(".checked-at");
+      if (stamp) stamp.textContent = `Checked ${checkedLabel(body.checkedAt)}`;
+      else renderResults();
+      setWatchStatus("Still the same as the last check.");
+    } else {
+      if (!quiet) availableOnlyEl.checked = false;
+      renderResults();
+      if (quiet) setWatchStatus(changed ? "Pickup changed since the last check." : "", changed);
+    }
   } catch (error) {
-    resultsEl.innerHTML = `<p class="prompt">Results show up here after a successful check.</p>`;
+    if (serial !== searchSerial) return;
+    failed = true;
+    if (!(quiet && state.lastResult)) {
+      resultsEl.innerHTML = `<p class="prompt">Results show up here after a successful check.</p>`;
+    }
     showError(error.message);
+    if (quiet && state.lastResult) setWatchStatus(error.message);
   } finally {
     checkEl.disabled = false;
     checkEl.textContent = "Check stores";
+    if (serial === searchSerial && watchEl.checked && !followUp) armWatch(failed ? WATCH_MS : undefined);
   }
+}
+
+async function runSearch(options) {
+  followUp = options;
+  if (searchRunning) return;
+  searchRunning = true;
+  try {
+    while (followUp) {
+      const current = followUp;
+      followUp = null;
+      const serial = ++searchSerial;
+      await executeSearch(current, serial);
+    }
+  } finally {
+    searchRunning = false;
+  }
+}
+
+formEl.addEventListener("submit", (event) => {
+  event.preventDefault();
+  clearTimeout(configTimer);
+  searchSerial += 1;
+  runSearch({ fresh: true, quiet: false });
 });
 
 compareEl.addEventListener("change", () => {
-  clearResults();
-  render();
+  configurationChanged();
+});
+
+watchEl.addEventListener("change", () => {
+  saveWatch(watchEl.checked);
+  if (!watchEl.checked) {
+    clearWatchTimer();
+    setWatchStatus("");
+    return;
+  }
+  if (!state.lastResult) {
+    setWatchStatus("Check a location to start watching.");
+    return;
+  }
+  const delay = nextWatchDelay(state.lastCheckedAt, Date.now(), false);
+  if (delay === 0) runSearch({ fresh: true, quiet: true });
+  else {
+    armWatch();
+    setWatchStatus("Watching this search.");
+  }
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (!watchEl.checked) return;
+  if (document.hidden) {
+    clearWatchTimer();
+    return;
+  }
+  const delay = nextWatchDelay(state.lastCheckedAt, Date.now(), false);
+  if (delay === 0) runSearch({ fresh: true, quiet: true });
+  else armWatch();
 });
 
 availableOnlyEl.addEventListener("change", renderResults);
 
-loadCatalog().catch((error) => {
-  nameEl.textContent = "The lineup didn’t load.";
-  showError(error.message);
-  checkEl.disabled = true;
-});
+loadCatalog()
+  .then(() => {
+    if (watchEl.checked && locationEl.value.trim()) runSearch({ fresh: true, quiet: false });
+  })
+  .catch((error) => {
+    nameEl.textContent = "The lineup didn’t load.";
+    showError(error.message);
+    checkEl.disabled = true;
+  });
