@@ -45,6 +45,14 @@
           Compare every finish at this storage
         </label>
 
+        <label class="compare">
+          <input id="watch" type="checkbox" />
+          Keep checking every 5 minutes
+        </label>
+        <p id="watch-note" class="hint">
+          A repeat check asks Apple again. While this tab is in the background, checking waits until you come back.
+        </p>
+
         <form id="search">
           <label for="location">ZIP code or city and state</label>
           <div class="search-row">
@@ -73,6 +81,7 @@
             Available only
           </label>
         </div>
+        <p id="watch-status" class="watch-status" hidden></p>
         <div id="results">
           <p class="prompt">Results show up here after you check a location.</p>
         </div>

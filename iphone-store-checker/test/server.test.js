@@ -117,6 +117,87 @@ test("catalog route normalizes the lineup", async () => {
   }
 });
 
+function pickupPayload(quote) {
+  return {
+    body: {
+      location: "90024",
+      stores: [
+        {
+          storeName: "Century City",
+          storeNumber: "R092",
+          city: "Los Angeles",
+          state: "CA",
+          storedistance: 1.1,
+          storeDistanceWithUnit: "1.1 mi",
+          partsAvailability: {
+            "MJQ34LL/A": { partNumber: "MJQ34LL/A", pickupDisplay: "available", pickupSearchQuote: quote, messageTypes: { regular: {} } },
+          },
+          retailStore: { address: { street: "10250 Santa Monica Boulevard" }, storeHours: [] },
+        },
+      ],
+    },
+  };
+}
+
+test("repeated checks reuse one Apple response and keep its check time", async () => {
+  let calls = 0;
+  const server = createServer({
+    availabilityTtlMs: 60_000,
+    fetchImpl: async () => {
+      calls += 1;
+      return jsonResponse(pickupPayload("Available Today"));
+    },
+  });
+  const port = await listen(server);
+  const url = `http://127.0.0.1:${port}/api/availability?location=90024&parts=MJQ34LL/A`;
+  try {
+    const first = await (await fetch(url)).json();
+    const second = await (await fetch(url)).json();
+    assert.equal(calls, 1);
+    assert.equal(second.cached, true);
+    assert.equal(second.checkedAt, first.checkedAt);
+    assert.equal(second.stores[0].parts[0].quote, "Available Today");
+
+    const fresh = await (await fetch(`${url}&fresh=1`)).json();
+    assert.equal(calls, 2);
+    assert.equal(fresh.cached, false);
+    assert.equal(fresh.stores[0].parts[0].quote, "Available Today");
+  } finally {
+    server.close();
+  }
+});
+
+test("overlapping checks share a single Apple request", async () => {
+  let calls = 0;
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const server = createServer({
+    fetchImpl: async () => {
+      calls += 1;
+      await gate;
+      return jsonResponse(pickupPayload("Available Today"));
+    },
+  });
+  const port = await listen(server);
+  const url = `http://127.0.0.1:${port}/api/availability?location=90024&parts=MJQ34LL/A&fresh=1`;
+  try {
+    const first = fetch(url);
+    const second = fetch(url);
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    assert.equal(calls, 1);
+    release();
+    const [left, right] = await Promise.all([first, second]);
+    assert.equal(left.status, 200);
+    assert.equal(right.status, 200);
+    assert.equal((await left.json()).cached, false);
+    assert.equal((await right.json()).cached, false);
+  } finally {
+    server.close();
+  }
+});
+
 test("static files stay inside the public directory", async () => {
   const server = createServer({ fetchImpl: async () => jsonResponse({}) });
   const port = await listen(server);
