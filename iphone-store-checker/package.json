@@ -5,6 +5,7 @@
   "description": "Check iPhone pickup availability at nearby Apple Stores.",
   "scripts": {
     "start": "node src/server.js",
+    "bot": "node src/telegram.js",
     "test": "node --test"
   },
   "engines": {

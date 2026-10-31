@@ -20,3 +20,16 @@ npm test
 ```
 
 The current lineup is iPhone Duo, iPhone 18 Pro and Pro Max, iPhone Air, iPhone 17, iPhone 17e, and iPhone 16. Prices shown are Apple’s unlocked prices.
+
+## Telegram bot
+
+A friend can check Apple Union Square from Telegram. The bot asks Apple’s US pickup service for iPhone Duo 256GB Night Sky (`MK1F4LL/A`) and Star White (`MK1E4LL/A`) at ZIP `94108`. It does not query German pickup.
+
+Message [@BotFather](https://t.me/BotFather), send `/newbot`, and copy the token.
+
+```bash
+cd iphone-store-checker
+TELEGRAM_BOT_TOKEN=123456:abc npm run bot
+```
+
+The process prints a `https://t.me/...` link. Send that to your friend. The buttons are Check Union Square, Night Sky, and Star White. A US ZIP code, or a city and state, checks another US store.
